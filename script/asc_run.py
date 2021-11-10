@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
+# =======
+# 初期設定
+# =======
 import sys
 import datetime
 import hashlib
@@ -21,14 +23,14 @@ with open(filename + '.py', mode='r') as f:
 # ==========
 # 手動設定項目
 # ==========
-batch_size = 32 # ここを変える時はcreate_***_feature_***の変数も変えて、特徴量の再抽出が必要
+batch_size = 32 # ここを変える時はcreate_***_feature_***.pyの変数も変えて、特徴量の再抽出が必要
 learning_rate = 0.0001
 epoch_num = 100
-dataset_name = 'sinsdcasenode2' # sinsdcasenode2 か gccensynth
+dataset_name = 'gccensynth' # sinsdcasenode2 か gccensynth
 feature_name = 'logmelspectrogram3ch' 
 image_size = 224 # 固定
-model_name = 'vit' # vit か resnet50 か dcase_ibm
-class_num = 9 # sinsdcasenode2なら9, gccensynthなら
+model_name = 'vit' # vit か resnet50
+class_num = 8 # sinsdcasenode2なら9, gccensynthなら8
 def optional_function(input):
     return input
 
@@ -82,7 +84,16 @@ test_datagen  = my_audio_datagenerator()
 # ===============
 # モデルのコンパイル
 # ===============
-model = get_my_model(model_info=model_name, class_num=class_num, image_size=image_size) # model_info='vit'なら get_my_model(model_info=model_name, class_num=class_num, image_size=image_size)
+# model_name='vit'なら get_my_model(model_info=model_name, class_num=class_num, image_size=image_size)
+# model_name='resnet50'なら get_my_model(model_info=model_name, class_num=class_num, input_shape=(224,224,3))
+model = None
+if model_name=='vit':
+    model = get_my_model(model_info=model_name, class_num=class_num, image_size=image_size)
+elif model_name=='resnet50':
+    model = get_my_model(model_info=model_name, class_num=class_num, input_shape=(224,224,3))
+
+
+
 adam = tf.keras.optimizers.Adam(lr=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=0.00000001, decay=0.0, amsgrad=False)
 model.compile(optimizer=adam,
               loss='categorical_crossentropy',
@@ -216,7 +227,7 @@ print('ex_name:', ex_name)
 # F1-scoreを抽出
 # ==============
 from sklearn.metrics import f1_score, accuracy_score
-from keras.utils import to_categorical
+from tensorflow.keras.utils import to_categorical
 predictions = model.predict(test_datagen.flow_from_pickle(batch_size=batch_size, label_path=test_label_path, data_str=test_data_str, func=optional_function, isRandom=False), verbose=0, steps=len(test_label) // batch_size) #softmax出力のまま。各クラスに属する確率
 y_pred = np.argmax(predictions, axis=1)
 with open(test_label_path, 'rb') as f:

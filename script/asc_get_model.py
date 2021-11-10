@@ -5,7 +5,7 @@ from vit_keras import vit, utils
 
 def get_my_model(model_info, class_num, **kwargs):
     if model_info == 'resnet50':
-        base_resnet50 = keras.applications.resnet50.ResNet50(include_top=False, weights='imagenet', input_shape=kwargs['input_shape'], pooling='avg')
+        base_resnet50 = keras.applications.resnet50.ResNet50(include_top=False, weights=kwargs['fine_tuning'], input_shape=kwargs['input_shape'], pooling='avg')
         x = base_resnet50.output
         predictions = Dense(class_num, activation='softmax')(x)
         model = keras.Model(inputs=base_resnet50.input, outputs=predictions)

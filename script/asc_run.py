@@ -26,11 +26,12 @@ with open(filename + '.py', mode='r') as f:
 batch_size = 32 # ここを変える時はcreate_***_feature_***.pyの変数も変えて、特徴量の再抽出が必要
 learning_rate = 0.0001
 epoch_num = 100
-dataset_name = 'gccensynth' # sinsdcasenode2 か gccensynth
+dataset_name = 'gccensynth' # 'sinsdcasenode2' か 'gccensynth'
 feature_name = 'logmelspectrogram3ch_batch32'
 image_size = 224 # 固定
-model_name = 'vit' # vit か resnet50
-class_num = 8 # sinsdcasenode2なら9, gccensynthなら8
+model_name = 'vit' # 'vit' か 'resnet50'
+class_num = 8 # dataset_nameが sinsdcasenode2なら9, gccensynthなら8, mnistなら10
+fine_tuning = None # None か 'imagenet' (モデルがResNet50のときのみ有効。ViTは常にimagenet)
 def optional_function(input):
     return input
 
@@ -90,7 +91,7 @@ model = None
 if model_name=='vit':
     model = get_my_model(model_info=model_name, class_num=class_num, image_size=image_size)
 elif model_name=='resnet50':
-    model = get_my_model(model_info=model_name, class_num=class_num, input_shape=(224,224,3))
+    model = get_my_model(model_info=model_name, class_num=class_num, input_shape=(224,224,3), fine_tuning = fine_tuning)
 
 
 

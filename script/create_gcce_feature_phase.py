@@ -4,6 +4,9 @@ from tqdm import tqdm
 import os
 import pickle
 import cv2
+import colorsys
+import cmath
+import math
 
 
 if __name__ == '__main__':
@@ -21,7 +24,7 @@ if __name__ == '__main__':
     batch_size = 32
     pre_image_size = 496 # 元々は(513, 504)。端っこはすてる。
     image_size = 224
-    feature_name = 'logmelspectrogram3ch'
+    feature_name = 'phase'
     """
     """
 
@@ -51,29 +54,40 @@ if __name__ == '__main__':
         os.makedirs('../' + 'output/' + dataset_name + '/' + feature_name + '/test/')
 
 
-    def calc_logspectrogram(wave):
-        #スペクトログラムの生成
-        spectrogram = np.abs(librosa.stft(wave, n_fft=window_length, hop_length=hop_length, center=False))
-        #ログスペクトログラムにする
-        logspectrogram = np.log(spectrogram + 0.0001)
-        logspectrogram = logspectrogram[:pre_image_size, :pre_image_size] # 画像サイズを496,496に設定
-        logspectrogram = cv2.resize(logspectrogram, dsize=(image_size, image_size)) #サイズを小さくする
-        return logspectrogram
+    def calc_ampli_and_phase(wave):
+        stft_output = librosa.stft(wave, n_fft=window_length, hop_length=hop_length, window='hann', center=False)
+        for i in range(stft_output.shape[0]):
+            for j in range(stft_output.shape[1]):
+                re = stft_output[i][j].real
+                im = stft_output[i][j].imag
+                if re == 0:
+                    stft_output[i][j] = 0
+                else:
+                    stft_output[i][j] = math.atan(im/re)
+        stft_output = stft_output.real
+
+        amplitude = np.abs(librosa.stft(wave, n_fft=window_length, hop_length=hop_length, window='hann', center=False))
+        amplitude = np.log(amplitude + 0.0001)
+
+        output = []
+        output.append(amplitude)
+        output.append(amplitude)
+        output.append(stft_output)
+        output = np.array(output)
+        output = output.transpose(1,2,0)
+
+        return output
 
 
     def create_one_sample(path):
-        one_sample = list()
         wave, _ = librosa.load(path, mono=True, sr=16000)
-        logspectrogram = calc_logspectrogram(wave)
-        
+        phase = calc_ampli_and_phase(wave)
 
-        one_sample.append(logspectrogram)
-        one_sample.append(logspectrogram) # 3chに増幅
-        one_sample.append(logspectrogram) # 3chに増幅
 
-        one_sample = np.array(one_sample)
-        one_sample = one_sample.transpose(1,2,0)
-        return one_sample
+        phase = phase[:pre_image_size, :pre_image_size] # 画像サイズを496,496に設定
+        phase = cv2.resize(phase, dsize=(image_size, image_size)) #サイズを小さくする
+    
+        return phase
 
 
     

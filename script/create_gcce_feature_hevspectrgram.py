@@ -4,6 +4,9 @@ from tqdm import tqdm
 import os
 import pickle
 import cv2
+import colorsys
+import cmath
+import math
 
 
 if __name__ == '__main__':
@@ -21,7 +24,7 @@ if __name__ == '__main__':
     batch_size = 32
     pre_image_size = 496 # 元々は(513, 504)。端っこはすてる。
     image_size = 224
-    feature_name = 'logmelspectrogram3ch'
+    feature_name = 'hevspectrogram'
     """
     """
 
@@ -51,29 +54,47 @@ if __name__ == '__main__':
         os.makedirs('../' + 'output/' + dataset_name + '/' + feature_name + '/test/')
 
 
-    def calc_logspectrogram(wave):
-        #スペクトログラムの生成
-        spectrogram = np.abs(librosa.stft(wave, n_fft=window_length, hop_length=hop_length, center=False))
-        #ログスペクトログラムにする
-        logspectrogram = np.log(spectrogram + 0.0001)
-        logspectrogram = logspectrogram[:pre_image_size, :pre_image_size] # 画像サイズを496,496に設定
-        logspectrogram = cv2.resize(logspectrogram, dsize=(image_size, image_size)) #サイズを小さくする
-        return logspectrogram
+    def calc_hsvlogspectrogram(wave):
+        stft_output = librosa.stft(wave, n_fft=window_length, hop_length=hop_length, window='hann', center=False)
+        amplitude = np.abs(stft_output) + 0.00001 #振幅
+        log_amplitude = np.log(amplitude) #ログ振幅
+        
+        log_amplitude = (log_amplitude-log_amplitude.min())/(log_amplitude.max()-log_amplitude.min()) #0~1に正規化
+
+
+        image_r = list()
+        image_g = list()
+        image_b = list()
+        for j in range(stft_output.shape[0]):
+            retu_r = list()
+            retu_g = list()
+            retu_b = list()
+            for k in range(stft_output.shape[1]):
+                arg = math.degrees(cmath.phase(stft_output[j][k])) + 180
+                r, g, b = colorsys.hsv_to_rgb(arg / 360.0, log_amplitude[j][k], log_amplitude[j][k])
+                
+                retu_r.append(r)
+                retu_g.append(g)
+                retu_b.append(b)
+            image_r.append(retu_r)
+            image_g.append(retu_g)
+            image_b.append(retu_b)
+        image_r = np.array(image_r)
+        image_g = np.array(image_g)
+        image_b = np.array(image_b)
+
+        image = np.stack([image_r, image_g, image_b], 2)
+        image = image[:pre_image_size, :pre_image_size] # 画像サイズを496,496に設定
+        image = cv2.resize(image, dsize=(image_size, image_size)) #サイズを小さくする
+        
+        return image
 
 
     def create_one_sample(path):
-        one_sample = list()
         wave, _ = librosa.load(path, mono=True, sr=16000)
-        logspectrogram = calc_logspectrogram(wave)
-        
-
-        one_sample.append(logspectrogram)
-        one_sample.append(logspectrogram) # 3chに増幅
-        one_sample.append(logspectrogram) # 3chに増幅
-
-        one_sample = np.array(one_sample)
-        one_sample = one_sample.transpose(1,2,0)
-        return one_sample
+        hsvspectrogram = calc_hsvlogspectrogram(wave)
+    
+        return hsvspectrogram
 
 
     

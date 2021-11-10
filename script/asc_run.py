@@ -26,7 +26,7 @@ with open(filename + '.py', mode='r') as f:
 batch_size = 32 # ここを変える時はcreate_***_feature_***.pyの変数も変えて、特徴量の再抽出が必要
 learning_rate = 0.0001
 epoch_num = 100
-dataset_name = 'gccensynth' # 'sinsdcasenode2' か 'gccensynth'
+dataset_name = 'gccensynth' # 'sinsdcasenode2' か 'gccensynth' か 'mnist'
 feature_name = 'logmelspectrogram3ch_batch32'
 image_size = 224 # 固定
 model_name = 'vit' # 'vit' か 'resnet50'
@@ -110,7 +110,8 @@ print(model.summary())
 # ====================
 # 必要なディレクトリの生成
 # ====================
-
+if not os.path.isdir('../' + 'result/'):
+    os.makedirs('../' + 'result/')
 if not os.path.isdir('../' + 'result/' + result_dir_name + '/'):
     os.makedirs('../' + 'result/' + result_dir_name + '/')
 if not os.path.isdir('../' + 'result/' + result_dir_name + '/models/'):

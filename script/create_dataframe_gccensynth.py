@@ -133,6 +133,8 @@ if __name__ == '__main__':
 
 
     # ディレクトリなかったら作る
+    if not os.path.isdir('../' + 'output/'):
+        os.makedirs('../' + 'output/')
     if not os.path.isdir('../' + 'output/' + dataset_name + '/dataframe/'):
         os.makedirs('../' + 'output/' + dataset_name + '/dataframe/')
     if not os.path.isdir('../' + 'output/' + dataset_name + '/dataframe/train/'):

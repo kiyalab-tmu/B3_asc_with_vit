@@ -24,7 +24,7 @@ if __name__ == '__main__':
     batch_size = 32
     pre_image_size = 496 # 元々は(513, 504)。端っこはすてる。
     image_size = 224
-    feature_name = 'realimag'
+    feature_name = 'realimag_batch' + batch_size
     """
     """
 

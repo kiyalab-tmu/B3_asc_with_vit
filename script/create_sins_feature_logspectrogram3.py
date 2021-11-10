@@ -25,7 +25,7 @@ if __name__ == '__main__':
     batch_size = 32
     pre_image_size = 496 # 元々は(510, 510)くらい。端っこはすてる。
     image_size = 224
-    feature_name = 'logmelspectrogram3ch'
+    feature_name = 'logmelspectrogram3ch_batch' + batch_size
     """
     """
 

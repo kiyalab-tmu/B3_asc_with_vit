@@ -10,9 +10,10 @@ import hashlib
 from os import path
 print('実験ディレクトリを入力:')
 result_dir_name = input()
-print('GPU idを入力:')
-gpu_id = int(input())
+# print('GPU idを入力:')
+# gpu_id = int(input())
 ex_name = 'asc_' + hashlib.md5(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S').encode()).hexdigest()
+print('今回の実験ID')
 filename = path.splitext(path.basename(__file__))[0]
 with open(filename + '.py', mode='r') as f:
     code_contents = f.read()
@@ -29,7 +30,7 @@ epoch_num = 100
 dataset_name = 'gccensynth' # 'sinsdcasenode2' か 'gccensynth' か 'mnist'
 feature_name = 'logmelspectrogram3ch_batch32'
 image_size = 224 # 固定
-model_name = 'vit' # 'vit' か 'resnet50'
+model_name = 'resnet50' # 'vit' か 'resnet50'
 class_num = 8 # dataset_nameが sinsdcasenode2なら9, gccensynthなら8, mnistなら10
 fine_tuning = None # None か 'imagenet' (モデルがResNet50のときのみ有効。ViTは常にimagenet)
 def optional_function(input):
@@ -63,10 +64,10 @@ test_label_path  = '../output/' + dataset_name + '/' + feature_name + '/test/lab
 test_data_str    = '../output/' + dataset_name + '/' + feature_name + '/test/feature_'
 
 
-physical_devices = tf.config.list_physical_devices('GPU')
-tf.config.list_physical_devices('GPU')
-tf.config.set_visible_devices(physical_devices[gpu_id], 'GPU')
-tf.config.experimental.set_memory_growth(physical_devices[gpu_id], True)
+# physical_devices = tf.config.list_physical_devices('GPU')
+# tf.config.list_physical_devices('GPU')
+# tf.config.set_visible_devices(physical_devices[gpu_id], 'GPU')
+# tf.config.experimental.set_memory_growth(physical_devices[gpu_id], True)
 
 
 

@@ -30,13 +30,13 @@ if __name__ == '__main__':
     with open(filename + '.py', mode='r') as f:
         code_contents = f.read()
 
-    # Dataframeの読み込み
-    with open('../output/' + dataset_name + '/dataframe/train/dataframe.pickle', 'rb') as f:
-        train_df = pickle.load(f)
-    with open('../output/' + dataset_name + '/dataframe/valid/dataframe.pickle', 'rb') as f:
-        valid_df = pickle.load(f)
-    with open('../output/' + dataset_name + '/dataframe/test/dataframe.pickle', 'rb') as f:
-        test_df = pickle.load(f)
+    # ファイル名と正解ラベルのリストの読み込み
+    with open('../../nsynth_data/train/filename_and_label.pickle', 'rb') as f:
+        train_dataset = pickle.load(f)
+    with open('../../nsynth_data/valid/filename_and_label.pickle', 'rb') as f:
+        valid_dataset = pickle.load(f)
+    with open('../../nsynth_data/test/filename_and_label.pickle', 'rb') as f:
+        test_dataset = pickle.load(f)
 
 
 
@@ -77,13 +77,13 @@ if __name__ == '__main__':
 
 
     
-    def do_create_feature(df, data_type):
+    def do_create_feature(dataset, data_type):
         feature_data = []
         label_data = []
-        for i in tqdm(range(df.shape[0])):
-            returned_data = create_one_sample(path=df['path'].iloc[i])
+        for i in tqdm(range(dataset.shape[0])):
+            returned_data = create_one_sample(path='nsynth_data/' + data_type + '/' + dataset[i][0])
             feature_data.append(returned_data)
-            label_data.append(df['label'].iloc[i])
+            label_data.append(dataset[i][1])
                 
             if len(feature_data) == batch_size:
                 feature_data = np.array(feature_data)
@@ -102,10 +102,10 @@ if __name__ == '__main__':
     
     #実行!
     print('######Train######')
-    do_create_feature(df=train_df, data_type='train')
+    do_create_feature(df=train_dataset, data_type='train')
     print('######Valid######')
-    do_create_feature(df=valid_df, data_type='valid')
+    do_create_feature(df=valid_dataset, data_type='valid')
     print('######Test######')
-    do_create_feature(df=test_df, data_type='test')
+    do_create_feature(df=test_dataset, data_type='test')
     
 

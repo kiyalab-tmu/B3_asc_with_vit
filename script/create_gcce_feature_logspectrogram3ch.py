@@ -21,7 +21,7 @@ if __name__ == '__main__':
     batch_size = 32
     pre_image_size = 496 # 元々は(513, 504)。端っこはすてる。
     image_size = 224
-    feature_name = 'logmelspectrogram3ch_batch' + batch_size
+    feature_name = 'logmelspectrogram3ch_batch' + str(batch_size)
     """
     """
 
@@ -80,8 +80,8 @@ if __name__ == '__main__':
     def do_create_feature(dataset, data_type):
         feature_data = []
         label_data = []
-        for i in tqdm(range(dataset.shape[0])):
-            returned_data = create_one_sample(path='nsynth_data/' + data_type + '/' + dataset[i][0])
+        for i in tqdm(range(len(dataset))):
+            returned_data = create_one_sample(path='../../nsynth_data/' + data_type + '/' + dataset[i][0])
             feature_data.append(returned_data)
             label_data.append(dataset[i][1])
                 
@@ -102,10 +102,10 @@ if __name__ == '__main__':
     
     #実行!
     print('######Train######')
-    do_create_feature(df=train_dataset, data_type='train')
+    do_create_feature(dataset=train_dataset, data_type='train')
     print('######Valid######')
-    do_create_feature(df=valid_dataset, data_type='valid')
+    do_create_feature(dataset=valid_dataset, data_type='valid')
     print('######Test######')
-    do_create_feature(df=test_dataset, data_type='test')
+    do_create_feature(dataset=test_dataset, data_type='test')
     
 

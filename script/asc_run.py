@@ -301,3 +301,14 @@ with open('../' + 'result/' + result_dir_name + '/result/' + ex_name + "_memo" +
 
 with open('../' + 'result/' + result_dir_name + '/result/' + ex_name + "_memo" + ".txt", mode='a') as f:
     print(code_contents, file=f)
+    
+    
+    
+    
+"""
+追加
+""" 
+print(y_pred) #テストデータを上から順番に(nsynth_data/test/filename_and_label.pickleの)予測した結果。model.predictはf-scoreの計算のところですでに実施済み。
+"""
+追加
+""" 

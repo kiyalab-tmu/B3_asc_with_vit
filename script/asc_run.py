@@ -26,7 +26,7 @@ with open(filename + '.py', mode='r') as f:
 # ==========
 batch_size = 32 # ここを変える時はcreate_***_feature_***.pyの変数も変えて、特徴量の再抽出が必要
 learning_rate = 0.0001
-epoch_num = 100
+epoch_num = 10
 dataset_name = 'gccensynth' # 'sinsdcasenode2' か 'gccensynth' か 'mnist'
 feature_name = 'logmelspectrogram3ch_batch32'
 image_size = 224 # 固定

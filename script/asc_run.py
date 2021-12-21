@@ -31,7 +31,7 @@ dataset_name = 'gccensynth' # 'sinsdcasenode2' か 'gccensynth' か 'mnist'
 feature_name = 'logmelspectrogram3ch_batch32'
 image_size = 224 # 固定
 model_name = 'resnet50' # 'vit' か 'resnet50'
-class_num = 8 # dataset_nameが sinsdcasenode2なら9, gccensynthなら8, mnistなら10
+class_num = 4 # dataset_nameが sinsdcasenode2なら9, gccensynthなら4, mnistなら10
 fine_tuning = None # None か 'imagenet' (モデルがResNet50のときのみ有効。ViTは常にimagenet)
 def optional_function(input):
     return input
